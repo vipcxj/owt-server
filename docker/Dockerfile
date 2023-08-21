@@ -135,6 +135,7 @@ RUN wget -c ${JSON_LINK} && mv json.hpp /usr/include/
 
 # Build OWT specific modules
 ARG OWTSERVER_REPO=https://github.com/open-webrtc-toolkit/owt-server.git
+ARG OWTSERVER_BRANCH=master
 ARG OPENH264_MAJOR=1
 ARG OPENH264_MINOR=7
 ARG OPENH264_SOVER=4
@@ -149,7 +150,7 @@ ARG SVT_VER=v1.3.0
 ARG SVT_REPO=https://github.com/intel/SVT-HEVC.git
 ARG SERVER_PATH=/home/owt-server
 ARG OWT_SDK_REPO=https://github.com/open-webrtc-toolkit/owt-client-javascript.git
-ARG OWT_BRANCH=master
+ARG OWT_SDK_BRANCH=master
 ARG IMG_APP_PATH=/app_data/
 ENV APP_PATH=${IMG_APP_PATH}
 
@@ -160,7 +161,7 @@ RUN apt-get update && apt-get install -y -q --no-install-recommends python libgl
 # 3. Clone webrtc source code and patch
 RUN git config --global user.email "you@example.com" && \
     git config --global user.name "Your Name" && \
-    git clone --depth=1 -b ${OWT_BRANCH} ${OWTSERVER_REPO} && \
+    git clone --depth=1 -b ${OWTSERVER_BRANCH} ${OWTSERVER_REPO} && \
 
     # Install node modules for owt
     npm install -g --loglevel error node-gyp@6.1.0 grunt-cli underscore jsdoc && \
@@ -198,7 +199,7 @@ RUN mkdir ${SERVER_PATH}/third_party/webrtc-m88 && \
     /bin/bash ${SERVER_PATH}/scripts/installWebrtc.sh
 
 # Get js client sdk for owt
-RUN cd /home && git clone --depth=1 -b ${OWT_BRANCH} ${OWT_SDK_REPO} && cd owt-client-javascript/scripts && npm install && grunt  && \
+RUN cd /home && git clone --depth=1 -b ${OWT_SDK_BRANCH} ${OWT_SDK_REPO} && cd owt-client-javascript/scripts && npm install && grunt  && \
     mkdir ${SERVER_PATH}/third_party/quic-lib && \
     export LD_LIBRARY_PATH=/usr/local/lib/x86_64-linux-gnu && \
     cd ${SERVER_PATH}/third_party/quic-lib && wget https://github.com/open-webrtc-toolkit/owt-deps-quic/releases/download/v0.1/dist.tgz && tar xzf dist.tgz && \
