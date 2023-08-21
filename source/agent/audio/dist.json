@@ -25,7 +25,8 @@
             "../../protos/protoConfig.json",
             "../../protos/*.proto",
             "../../../scripts/release/install_ffmpeg.sh",
-            "../../../scripts/release/initauth.js"
+            "../../../scripts/release/initauth.js",
+            "../../../scripts/release/setauth.js"
         ],
         "folders": {
             "audio": [

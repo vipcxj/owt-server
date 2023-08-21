@@ -12,6 +12,7 @@
             "scheduler.js",
             "strategy.js",
             "../../scripts/release/initauth.js",
+            "../../scripts/release/setauth.js",
             "../common/amqpClient.js",
             "../common/cipher.js",
             "../common/logger.js",

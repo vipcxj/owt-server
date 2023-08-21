@@ -31,7 +31,8 @@
             "../../common/grpcTools.js",
             "../../protos/protoConfig.json",
             "../../protos/*.proto",
-            "../../../scripts/release/initauth.js"
+            "../../../scripts/release/initauth.js",
+            "../../../scripts/release/setauth.js"
         ],
         "folders": {
             "data_access": [
