@@ -198,8 +198,8 @@ function prepareService (serviceName, next) {
           console.log('mongodb: error in adding', serviceName);
           return client.close();
         }
-        result.ops[0].key = key;
-        next(result.ops[0]);
+        service._id = result.insertedId
+        next(service);
       });
     } else {
       if (service.encrypted === true) {
