@@ -32,10 +32,16 @@ async function loadAuth() {
 async function connect(dbURL, auth) {
   return new Promise((resolve, reject) => {
     if (auth && !dbURL.includes('@')) {
-      dbURL = 'mongodb://' + auth.username
+      if (dbURL.indexOf('mongodb+srv://') === 0) {
+        dbURL = 'mongodb+srv://' + auth.username
+        + ':' + auth.password
+        + '@' + dbURL.replace('mongodb+srv://', '');
+      } else {
+        dbURL = 'mongodb://' + auth.username
         + ':' + auth.password
         + '@' + dbURL.replace('mongodb://', '');
-    } else if (dbURL.indexOf('mongodb://') !== 0) {
+      }
+    } else if (dbURL.indexOf('mongodb://') !== 0 && dbURL.indexOf('mongodb+srv://') !== 0) {
       dbURL = 'mongodb://' + dbURL;
     }
     MongoClient.connect(dbURL, connectOption, function(err, cli) {

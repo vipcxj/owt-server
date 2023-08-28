@@ -6,9 +6,9 @@
 
 'use strict';
 
-var databaseUrl = process.env.DB_URL;
-if (!databaseUrl) {
-  databaseUrl = 'localhost/owtdb';
+var dbURL = process.env.DB_URL;
+if (!dbURL) {
+  dbURL = 'localhost/owtdb';
 }
 
 var MongoClient = require('mongodb').MongoClient;
@@ -21,7 +21,7 @@ var DefaultUtil = require('./data_access/defaults');
 var Room = require('./data_access/model/roomModel');
 
 function prepareDB(next) {
-  if (dbURL.indexOf('mongodb://') !== 0) {
+  if (dbURL.indexOf('mongodb://') !== 0 && dbURL.indexOf('mongodb+srv://') !== 0) {
     dbURL = 'mongodb://' + dbURL;
   }
   MongoClient.connect(dbURL, connectOption, function(err, client) {

@@ -35,7 +35,7 @@ var sampleServiceFile = path.resolve(dirName, SAMPLE_RELATED_PATH, sampleEntryNa
 var spk = cipher.dk;
 
 function prepareDB(next) {
-  if (dbURL.indexOf('mongodb://') !== 0) {
+  if (dbURL.indexOf('mongodb://') !== 0 && dbURL.indexOf('mongodb+srv://') !== 0) {
     dbURL = 'mongodb://' + dbURL;
   }
   if (fs.existsSync(cipher.astore)) {

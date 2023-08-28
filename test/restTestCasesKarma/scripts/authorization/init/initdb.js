@@ -28,7 +28,7 @@ var configFile = path.join(dirName, 'management_api.toml');
 var sampleServiceFile = path.resolve(dirName, '../environment.js');
 
 function prepareDB(next) {
-  if (dbURL.indexOf('mongodb://') !== 0) {
+  if (dbURL.indexOf('mongodb://') !== 0 && dbURL.indexOf('mongodb+srv://') !== 0) {
     dbURL = 'mongodb://' + dbURL;
   }
   if (fs.existsSync(cipher.astore)) {
