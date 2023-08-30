@@ -21,7 +21,8 @@
             "../../common/logger.js",
             "../../common/makeRPC.js",
             "../../common/rpcChannel.js",
-            "../../../scripts/release/initauth.js"
+            "../../../scripts/release/initauth.js",
+            "../../../scripts/release/setauth.js"
         ],
         "folders": {
             "data_access": [

@@ -21,7 +21,9 @@
           "../../common/makeRPC.js",
           "../../common/rpcChannel.js",
           "../../../scripts/release/initcert.js",
+          "../../../scripts/release/setcert.js",
           "../../../scripts/release/initauth.js",
+          "../../../scripts/release/setauth.js",
           "../../../scripts/detectOS.sh"
       ],
       "folders": {

@@ -25,6 +25,7 @@
             "../../protos/*.proto",
             "../../../scripts/release/install_ffmpeg.sh",
             "../../../scripts/release/initauth.js",
+            "../../../scripts/release/setauth.js",
             "../../../scripts/detectOS.sh"
         ],
         "folders": {

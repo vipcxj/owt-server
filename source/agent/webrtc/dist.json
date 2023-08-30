@@ -24,7 +24,9 @@
             "../../protos/protoConfig.json",
             "../../protos/*.proto",
             "../../../scripts/release/initcert.js",
+            "../../../scripts/release/setcert.js",
             "../../../scripts/release/initauth.js",
+            "../../../scripts/release/setauth.js",
             "../../../scripts/detectOS.sh"
         ],
         "folders": {
