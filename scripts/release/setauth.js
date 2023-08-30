@@ -246,4 +246,3 @@ parseArgs()
       return generateServiceProtectionKey(options.cleanup);
     }
   })
-  .finally(() => readline.close());
