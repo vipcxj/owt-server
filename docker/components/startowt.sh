@@ -178,6 +178,7 @@ case ${component} in
     cd ${OWT_HOME}/management_api
     config_rabbit
     config_mongo
+    config_processes management_api.toml
     config_ssl management_api.toml $ssl
     config_port management_api.toml 3000 $port
     ./init.sh --dburl="${mongourl}"
