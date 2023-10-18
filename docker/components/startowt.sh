@@ -6,7 +6,7 @@ ROOT='/home/owt'
 export OWT_HOME=${ROOT}
 
 # format the parameters
-set -- $(getopt -u -l rabbit:,rabbit_user:,rabbit_pass:,mongo:,mongo_user:,mongo_pass:,hostname:,externalip:,network_interface:,component:,ssl::,ssl_crt:,ssl_key:,ssl_pass:,port:,processes:,prerun_processes:,max_processes: -- -- "$@")
+set -- $(getopt -u -l rabbit:,rabbit_user:,rabbit_pass:,mongo:,mongo_user:,mongo_pass:,hostname:,externalip:,network_interface:,component:,ssl::,ssl_crt:,ssl_key:,ssl_pass:,port:,processes:,prerun_processes:,max_processes:,enable_grp::,grp_host: -- -- "$@")
 # get the parameters
 while [ -n "$1" ]
 do
@@ -35,6 +35,14 @@ do
     --processes ) processes=$2; shift; shift ;;
     --prerun_processes ) prerun_processes=$2; shift; shift ;;
     --max_processes ) max_processes=$2; shift; shift ;;
+    --enable_grp )
+      case "$2" in
+        "") enable_grp=true; shift; shift ;;
+        true) enable_grp=true; shift; shift ;;
+        false) enable_grp=false; shift; shift ;;
+        *) echo "option enable_grp must be true or false."; exit 1;
+      esac ;;
+    --grp_host ) grp_host=$2; shift; shift ;;
     * ) break;;
   esac
 done
@@ -50,14 +58,23 @@ if [ -z "${mongourl}" ];then
     echo "mongourl is required!"
     exit 1
 fi
-if [ -z "${rabbitmqip}" ];then
+if [ -z "${enable_grp}" ] || [ "$enable_grp" = 'false' ]; then
+  if [ -z "${rabbitmqip}" ]; then
     echo "rabbitmqip is required!"
     exit 1
+  fi
+else
+  if [ -z "$grp_host" ]; then
+    echo "grp_host is required when enable_grp is true!"
+    exit 1
+  fi
 fi
 
 alltoml=$(find . -maxdepth 2 -name "*.toml")
 echo ${mongourl}
-echo ${rabbitmqip}
+if [ ! -z "${rabbitmqip}" ]; then
+  echo ${rabbitmqip}
+fi
 for toml in $alltoml; do
   if [ ! -z "${mongourl}" ];then
     sed -i "/^dataBaseURL = /c \dataBaseURL = \"${mongourl}\"" $toml  
@@ -104,6 +121,19 @@ config_ssl()
         openssl pkcs12 -export -out $pfx_file -inkey "$ssl_key" -in "$ssl_crt" -password "pass:$ssl_pass"
         node setcert.js "$ssl_pass"
       fi
+    fi
+  fi
+}
+
+config_grp()
+{
+  config_file_path=$1
+  true_or_false=$2
+  if [ ! -z "$true_or_false" ]; then
+    if [ "$true_or_false" = 'true' ]; then
+      sed -i "/^#enable_grpc = true/c \enable_grpc = true" "$config_file_path"
+      sed -i "/^#grpc_host = \"localhost:10080\"/c \grpc_host = \"$grp_host\"" "$config_file_path"
+      sed -i "s/^\[cluster]/[cluster]\nhost = \"$grp_host\"/" "$config_file_path"
     fi
   fi
 }
@@ -177,6 +207,7 @@ case ${component} in
     management-api )
     cd ${OWT_HOME}/management_api
     config_rabbit
+    config_grp management_api.toml $enable_grp
     config_mongo
     config_processes management_api.toml
     config_ssl management_api.toml $ssl
@@ -187,12 +218,14 @@ case ${component} in
     cluster-manager )
     cd ${OWT_HOME}/cluster_manager
     config_rabbit
+    config_grp cluster_manager.toml $enable_grp
     config_mongo
     node .
     ;;
     portal )
     cd ${OWT_HOME}/portal
     config_rabbit
+    config_grp portal.toml $enable_grp
     config_mongo
     config_ssl portal.toml $ssl
     config_port portal.toml 8080 $port
@@ -202,6 +235,7 @@ case ${component} in
     cd ${OWT_HOME}/eventbridge
     export LD_LIBRARY_PATH=./lib:${LD_LIBRARY_PATH}
     config_rabbit
+    config_grp agent.toml $enable_grp
     config_mongo
     config_processes agent.toml
     node .
@@ -209,6 +243,7 @@ case ${component} in
     conference-agent )
     cd ${OWT_HOME}/conference_agent
     config_rabbit
+    config_grp agent.toml $enable_grp
     config_mongo
     config_processes agent.toml
     node . -U conference
@@ -217,6 +252,7 @@ case ${component} in
     cd ${OWT_HOME}/webrtc_agent
     export LD_LIBRARY_PATH=./lib:${LD_LIBRARY_PATH}
     config_rabbit
+    config_grp agent.toml $enable_grp
     config_mongo
     config_processes agent.toml
     node . -U webrtc
@@ -225,6 +261,7 @@ case ${component} in
     cd ${OWT_HOME}/streaming_agent
     export LD_LIBRARY_PATH=./lib:${LD_LIBRARY_PATH}
     config_rabbit
+    config_grp agent.toml $enable_grp
     config_mongo
     config_processes agent.toml
     node . -U streaming
@@ -233,6 +270,7 @@ case ${component} in
     cd ${OWT_HOME}/recording_agent
     export LD_LIBRARY_PATH=./lib:${LD_LIBRARY_PATH}
     config_rabbit
+    config_grp agent.toml $enable_grp
     config_mongo
     config_processes agent.toml
     node . -U recording
@@ -241,6 +279,7 @@ case ${component} in
     cd ${OWT_HOME}/sip_agent
     export LD_LIBRARY_PATH=./lib:${LD_LIBRARY_PATH}
     config_rabbit
+    config_grp agent.toml $enable_grp
     config_mongo
     config_processes agent.toml
     node . -U sip
@@ -248,6 +287,7 @@ case ${component} in
     sip-portal )
     cd ${OWT_HOME}/sip_portal
     config_rabbit
+    config_grp sip_portal.toml $enable_grp
     config_mongo
     node sip_portal.js
     ;;
@@ -255,6 +295,7 @@ case ${component} in
     cd ${OWT_HOME}/audio_agent
     export LD_LIBRARY_PATH=./lib:${LD_LIBRARY_PATH}
     config_rabbit
+    config_grp agent.toml $enable_grp
     config_mongo
     config_processes agent.toml
     node . -U audio
@@ -264,6 +305,7 @@ case ${component} in
     export LD_LIBRARY_PATH=./lib:${LD_LIBRARY_PATH}
     export PATH=./bin:/opt/intel/mediasdk/bin:${PATH}
     config_rabbit
+    config_grp agent.toml $enable_grp
     config_mongo
     config_processes agent.toml
     node . -U video
@@ -272,6 +314,7 @@ case ${component} in
     cd ${OWT_HOME}/quic_agent
     export LD_LIBRARY_PATH=./lib:${LD_LIBRARY_PATH}
     config_rabbit
+    config_grp agent.toml $enable_grp
     config_mongo
     config_port agent.toml 7700 $port
     config_processes agent.toml
@@ -281,6 +324,7 @@ case ${component} in
     cd ${OWT_HOME}/media_bridge
     export LD_LIBRARY_PATH=./lib:${LD_LIBRARY_PATH}
     config_rabbit
+    config_grp agent.toml $enable_grp
     config_mongo
     config_processes agent.toml
     node . -U mediabridge
@@ -291,6 +335,7 @@ case ${component} in
     export PATH=./bin:/opt/intel/mediasdk/bin:${PATH}
     export CONFIGFILE_PATH=./plugin.cfg
     config_rabbit
+    config_grp agent.toml $enable_grp
     config_mongo
     config_processes agent.toml
     node . -U analytics
@@ -298,6 +343,7 @@ case ${component} in
     management-console )
     cd ${OWT_HOME}/management_console
     config_rabbit
+    config_grp management_console.toml $enable_grp
     config_mongo
     config_ssl management_console.toml $ssl
     config_port management_console.toml 3300 $port

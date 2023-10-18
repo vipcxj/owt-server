@@ -1,0 +1,8 @@
+{
+    "name": "owt-init-db",
+    "version": "5.1.0",
+    "main": "index.mjs",
+    "dependencies": {
+        "log4js": "^6.9.1"
+    }
+}

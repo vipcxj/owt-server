@@ -1,0 +1,9 @@
+{
+    "name": "owt-init-db",
+    "version": "5.1.0",
+    "main": "index.mjs",
+    "dependencies": {
+        "@kubernetes/client-node": "^0.18.1",
+        "mongoose": "^7.4.5"
+    }
+}
