@@ -133,7 +133,7 @@ config_grp()
     if [ "$true_or_false" = 'true' ]; then
       sed -i "/^#enable_grpc = true/c \enable_grpc = true" "$config_file_path"
       sed -i "/^#grpc_host = \"localhost:10080\"/c \grpc_host = \"$grp_host\"" "$config_file_path"
-      sed -i "s/^\[cluster]/[cluster]\nhost = \"$grp_host\"/" "$config_file_path"
+      sed -i "s/^\[cluster]/[cluster]\nhost = \"$grp_host\"\ngrpc_host = \"$grp_host\"/" "$config_file_path"
     fi
   fi
 }
