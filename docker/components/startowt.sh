@@ -212,7 +212,9 @@ case ${component} in
     config_processes management_api.toml
     config_ssl management_api.toml $ssl
     config_port management_api.toml 3000 $port
-    ./init.sh --dburl="${mongourl}"
+    ./init.sh --dburl="${mongourl}" << 'EOF'
+y
+EOF
     node .
     ;;
     cluster-manager )
