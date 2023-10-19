@@ -127,6 +127,15 @@ var RpcRequest = function(rpcChannel) {
           if (err) {
             reject(err.message);
           } else {
+            if (result && result.room && result.room.streams) {
+              result.room.streams.forEach(stream => {
+                if (stream.info && typeof stream.info.attributes == "string") {
+                  try {
+                    stream.info.attributes = JSON.parse(stream.info.attributes)
+                  } catch (e) {}
+                }
+              });
+            }
             resolve(result);
           }
         });
