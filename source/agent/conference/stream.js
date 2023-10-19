@@ -209,7 +209,7 @@ class Stream {
       owner: this.info.owner,
       type: this.info.type,
       inViews: this.info.inViews,
-      attributes: this.info.attributes,
+      attributes: JSON.stringify(this.info.attributes),
       activeInput: this.info.activeInput,
     };
     const portalFormat = {
